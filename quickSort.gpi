@@ -1,0 +1,34 @@
+set terminal png
+set output "quickSort.png"
+
+set xlabel "Array size"
+set ylabel "CPU time (ms)"
+
+set title  "QuickSort: Empirical Analysis of Time Complexity"
+
+plot "quickSort.CPUtimes" using 1:2 with points title "CPU Times of Quick Sort"
+
+##########################################################################
+#Testing different analytical functions to determine which best fits:
+
+set output "quickSort_and_Fit-Function.png"
+set title "Quick Sort: Time Complexity and Best Fit Function"
+
+#Define functions
+f_lineal(x) = a1*x + b1
+f_nlogn(x) = a2*x*log(x) +b2
+f_nlogn_plus_n(x) = a3*x*log(x) + b3*x + c3
+
+#Fit the data
+fit f_lineal(x) "quickSort.CPUtimes" using 1:2 via a1, b1
+fit f_nlogn(x) "quickSort.CPUtimes" using 1:2 via a2, b2
+fit f_nlogn_plus_n(x) "quickSort.CPUtimes" using 1:2 via a3, b3, c3
+
+#------------------------------------------------------------------------
+
+plot "quickSort.CPUtimes" using 1:2 with points title "CPU Times of Quick Sort", \
+    f_nlogn_plus_n(x) with lines title "Best Fit: n*log(n) + n"
+
+#Finally draw both functions (CPU times of sample and the one that best fits) on one graph
+plot "quickSort.CPUtimes" using 1:2 with points title "CPU times of sample", y(x) title fitFunction  
+
